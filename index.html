@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>D3 Test</title>
+    <script type="text/javascript" src="d3/d3.js"></script>
+    <script type="text/javascript" src="js/Zplane.js"></script>
+</head>
+
+<body>
+    <p>Click on this text to update the chart with new data values (once).</p>
+    <script type="text/javascript">
+        //Your beautiful D3 code will go here
+        let zplane = new Zplane(300,300);
+        zplane.plot_axis()
+        // let svgWidth = 500;
+        // let xPadding = 30;
+        // let yPadding = 30;
+        // let svgHeight = 500;
+        // var dataset = [[0.5, 0.5], [0.6, 0.6], [0.7, 0.7], [0, 0]];
+        // let svg = d3.select("body")
+        //     .append("svg")
+        //     .attr("width", svgWidth)
+        //     .attr("height", svgHeight);
+
+        // // set our scale
+        // // scale x
+        // let xNegativScale = d3.scaleLinear().domain([-1, 0]).range([xPadding, 250]);
+        // let xPositiveScale = d3.scaleLinear().domain([0, 1]).range([250, 500 - xPadding]);
+        // //scale y 
+        // let yNegativScale = d3.scaleLinear().domain([-1, 0]).range([250, 500 - yPadding]);
+        // let yPositiveScale = d3.scaleLinear().domain([0, 1]).range([250, 0 + yPadding]);
+        // // set up axis 
+        // // set up x axis
+        // let xPositiveAxis = d3.axisBottom(xPositiveScale)
+        // let xNegativeAxis = d3.axisBottom(xNegativScale)
+        // svg.append("g").call(xPositiveAxis).attr("class", "axis")
+        //     .attr("transform", "translate(0," + 250 + ")");
+        // svg.append("g").call(xNegativeAxis).attr("class", "axis")
+        //     .attr("transform", "translate(0," + 250 + ")");
+        // // set up y axis
+        // let yPositiveAxis = d3.axisLeft(yPositiveScale)
+        // let yNegativeAxis = d3.axisLeft(d3.scaleLinear().domain([0, -1]).range([250, 500 - yPadding]))
+        // svg.append("g").call(yPositiveAxis).attr("class", "axis")
+        //     .attr("transform", "translate(" + 250 + ",0)");
+        // svg.append("g").call(yNegativeAxis).attr("class", "axis")
+        //     .attr("transform", "translate(" + 250 + ",0)");
+        // svg.append("circle").attr("cx", 250).attr("cy", 250).attr("r", 250 - xPadding).attr("stroke", "black")
+        //     .attr("stroke-width", "2")
+        //     .attr("opacity", 0.1)
+        // // plot
+        // svg.selectAll("circle.point")
+        //     .data(dataset)
+        //     .enter()
+        //     .append("circle")
+        //     .attr("cx", function (d) {
+        //         let v = 0;
+        //         if (d[0] > 0) {
+        //             v = xPositiveScale(d[0]);
+        //         } else {
+        //             v = xNegativScale(d[0]);
+        //         }
+        //         return v;
+        //     })
+        //     .attr("cy", function (d) {
+        //         let v = 0;
+        //         if (d[1] >= 0) {
+        //             v = yPositiveScale(d[1]);
+        //         } else {
+        //             v = yNegativeAxis(d[1]);
+        //         }
+        //         return v;
+        //     })
+        //     .attr("r", 5)
+        //     .attr("class", "point");
+        // //On click, update with new data
+        // d3.select("p")
+        //     .on("click", function () {
+        //         //New values for dataset
+        //         newData = [1, 0]
+        //         dataset.push(newData)
+        //         let points = svg.selectAll("circle.point").data(dataset);
+        //         console.log(points)
+        //         //enter
+        //         points.enter().append("circle")
+        //             .attr("cx", function (d) {
+        //                 let v = 0;
+        //                 if (d[0] > 0) {
+        //                     v = xPositiveScale(d[0]);
+        //                 } else {
+        //                     v = xNegativScale(d[0]);
+        //                 }
+        //                 return v;
+        //             })
+        //             .attr("cy", function (d) {
+        //                 let v = 0;
+        //                 if (d[1] >= 0) {
+        //                     v = yPositiveScale(d[1]);
+        //                 } else {
+        //                     v = yNegativeAxis(d[1]);
+        //                 }
+        //                 return v;
+        //             })
+        //             .attr("r", 5)
+        //             .attr("class", "point")
+        //             .merge(points);
+        //     });
+// let w = 500;
+// let h = 500;
+// let padding = 30 ;
+// let dataSet = [];
+
+// let middlePointOf_x = w / 2 ;
+// let middlePointOf_y = h / 2 ;
+// // add svg element 
+// let svg = d3.select("body")
+//     .append("svg")
+//     .attr("width", w)
+//     .attr("height", h);
+
+// // set our scale
+// // scale x
+// let xNegativScale = d3.scaleLinear().domain([-1, 0]).range([padding, middlePointOf_x]).ticks(5);
+// let xPositiveScale = d3.scaleLinear().domain([0, 1]).range([middlePointOf_x, w - padding]).ticks(5);
+// //scale y 
+// let yNegativScale = d3.scaleLinear().domain([-1, 0]).range([middlePointOf_y, h - padding]);
+// let yPositiveScale = d3.scaleLinear().domain([0, 1]).range([middlePointOf_y, padding]);
+
+// // set up x axis
+// let xPositiveAxis = d3.axisBottom(xPositiveScale);
+// let xNegativeAxis = d3.axisBottom(xNegativScale);
+// svg.append("g").call(xPositiveAxis).attr("class", "axis")
+//     .attr("transform", "translate(0," + middlePointOf_x + ")");
+// svg.append("g").call(xNegativeAxis).attr("class", "axis")
+//     .attr("transform", "translate(0," + middlePointOf_x + ")");
+// // set up y axis
+// let yPositiveAxis = d3.axisLeft(yPositiveScale);
+// let yNegativeAxis = d3.axisLeft(d3.scaleLinear().domain([0, -1]).range([middlePointOf_y,h - padding]));
+
+// svg.append("g").call(yPositiveAxis).attr("class", "axis")
+//     .attr("transform", "translate(" + middlePointOf_y + ",0)");
+// svg.append("g").call(yNegativeAxis).attr("class", "axis")
+//     .attr("transform", "translate(" + middlePointOf_y + ",0)");
+
+    </script>
+</body>
+
+</html>
