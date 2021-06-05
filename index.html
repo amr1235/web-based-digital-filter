@@ -10,14 +10,90 @@
 </head>
 
 <body>
-    <p>Click on this text to update the chart with new data values (once).</p>
+    <table>
+        <tr>
+            <td> add real Pole </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="realPole">real : </label>
+                <input type="text" name="realPole" id="realPole" value="0">
+            </td>
+            <td>
+                <button onclick="add_real('realPole')">add</button>
+            </td>
+        </tr>
+        <tr>
+            <td> add conjugate Pole </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="poleMag">magnitude : </label>
+                <input type="text" name="poleMag" id="poleMag" value="0">
+            </td>
+            <td>
+                <label for="polePhase">phase : </label>
+                <input type="text" name="polePhase" id="polePhase" value="0">
+            </td>
+            <td>
+                <button>add</button>
+            </td>
+        </tr>
+        <tr>
+            <td> add real Zero </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="realZero">real : </label>
+                <input type="text" name="realZero" id="realZero" value="0">
+            </td>
+            <td>
+                <button onclick="add_real('realZero')">add</button>
+            </td>
+        </tr>
+        <tr>
+            <td> add conjugate Zero </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="zeroMag">magnitude : </label>
+                <input type="text" name="zeroMag" id="zeroMag" value="0">
+            </td>
+            <td>
+                <label for="zeroPhase">phase : </label>
+                <input type="text" name="zeroPhase" id="zeroPhase" value="0">
+            </td>
+            <td>
+                <button>add</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>
+                    current real : <span id="current_x"></span>
+                </label>
+            </td>
+            <td>
+                <label>
+                    current j : <span id="current_j"></span>
+                </label>
+            </td>
+        </tr>
+    </table>
     <script type="text/javascript">
         //Your beautiful D3 code will go here
-        let zplane = new Zplane(400,400);
+        let zplane = new Zplane(400, 400);
         zplane.plot_axis();
-        zplane.add_point([0,-0.5],zplane.types.pole);
-        zplane.add_point([0.5,0],zplane.types.zero);
-
+        const add_real = (type) => {
+            if(type == zplane.types.realPole) {
+                //get value of pole
+                let value = parseFloat(document.getElementById("realPole").value);
+                zplane.add_point([value,0],zplane.types.realPole);
+            }else {
+                let value = parseFloat(document.getElementById("realZero").value);
+                zplane.add_point([value,0],zplane.types.realZero);
+            }
+        }
     </script>
 </body>
 
