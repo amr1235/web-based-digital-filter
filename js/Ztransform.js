@@ -6,7 +6,7 @@ class ZTransform {
     get frequencies() {
         return this.theta;
     }
-    
+
     generateSemiUnitCircle(numberOfSamples) {
         this.theta = this.linspace(0, Math.PI, numberOfSamples);
         let points = [];
@@ -19,26 +19,53 @@ class ZTransform {
         return points;
     }
 
-    distance(point1 = [], point2 = []) {
-        return Math.sqrt(Math.pow(point1[0] - point2[0], 2) + Math.pow(point1[1] - point2[1], 2))
+    difference(point1 = [], point2 = []) {
+        return [point2[0] - point1[0], point2[1] - point1[1]];
     }
 
-    frequencyResponse(poles = [[]], zeroes = [[]]) {
-        let response = []        
+    magnitude(point) {
+        return Math.sqrt(Math.pow(point[0], 2) + Math.pow(point[1], 2));
+    }
+
+    phase(point) {
+        if (point[0] == 0) {
+            return Math.PI / 2;
+        }
+        else {
+            return Math.atan(point[1] / point[0]);
+        }
+    }
+
+    filter(poles = [[]], zeroes = [[]]) {
+        let magResponse = []
+        let phaseResponse = []
+        let magNum, magDenum, phaseNum, phaseDenum, diff;
         for (const point of this.semiUnitCircle) {
-            let num = 1;
-            let denum = 1;
+            magNum = 1;
+            magDenum = 1;
+            phaseNum = 0;
+            phaseDenum = 0;
             for (const zero of zeroes) {
-                num = num * this.distance(point, zero);
+                diff = this.difference(point, zero);
+                magNum = magNum * this.magnitude(diff);
+                phaseNum = phaseNum - this.phase(diff);
+                if (Math.abs(phaseNum.toFixed(5)) == Math.PI.toFixed(5)) phaseNum = 0;
             }
             for (const pole of poles) {
-                denum = denum * this.distance(point, pole);
+                diff = this.difference(point, pole);
+                magDenum = magDenum * this.magnitude(diff);
+                phaseDenum = phaseDenum - this.phase(diff);
+                if (Math.abs(phaseDenum.toFixed(5)) == Math.PI.toFixed(5)) phaseDenum = 0;
             }
-            response.push(num / denum);
+            magResponse.push(magNum / magDenum);
+            phaseResponse.push(phaseNum - phaseDenum);
         }
-        return response;
+        return {
+            "magnitude": magResponse,
+            "phase": phaseResponse
+        };
     }
-    
+
     linspace(start, end, num) {
         const step = (end - start) / (num - 1);
         let arr = [];
@@ -51,15 +78,18 @@ class ZTransform {
 
 
 // poles = [
-// //   x, y
-//     [0, 5],
-//     [1, 1]
+//     //   x, y
+//     // [0, 5],
+//     // [0, 1]
 // ];
 // zeroes = [
-//     [1, 0]
+//     [0.5, 0.866],
+//     [0.5, -0.866],
 // ];
-// const SAMPLING_RATE = 10;
+
+// const SAMPLING_RATE = 100;
 // let ztrans = new ZTransform(SAMPLING_RATE)
-// let response = ztrans.frequencyResponse(poles, zeroes); //y-axis
-// let freqs = ztrans.frequencies //x-axis
-// console.log(response,freqs);
+// let { magnitude, phase } = ztrans.filter(poles, zeroes);
+// let freqs = ztrans.frequencies
+// plot(freqs,mag)
+// plot(freqs,phase)

@@ -94,8 +94,7 @@
     <!-- freq response -->
     <script type="text/javascript">
         let zplane = new Zplane(400, 400);
-        this.ztrans = new ZTransform(10);
-        this.plt = new Plot(50,100);
+        let ztrans = new ZTransform(10);
         const add_real = (type) => {
             if(type == zplane.types.nonConjPole) {
                 //get value of pole
@@ -122,22 +121,19 @@
         }
         //Your beautiful D3 code will go here
         zplane.plot_axis();
-        let poles = zplane.get_poles()
-        let zeros = zplane.get_zeros()
-        let response = this.ztrans.frequencyResponse(poles, zeros); //y-axis
-        let freqs = this.ztrans.frequencies //x-axis
+        let plt = new Plot(50,100);
         // update plot 
-        this.plt.plot(freqs,response,"frequancy response");
+        plt.plot([],[],[],[],"magnitude response","phase response");
         zplane.function_during_drag = () => {
-        //destroy old plot 
-        this.plt.destroy();
-        let poles = zplane.get_poles()
-        let zeros = zplane.get_zeros()
-        let response = ztrans.frequencyResponse(poles, zeros); //y-axis
-        let freqs = ztrans.frequencies //x-axis
-        // update plot 
-        plt.plot(freqs,response,"frequancy response");
-    }
+                //destroy old plot 
+                plt.destroy();
+                let poles = zplane.get_poles();
+                let zeros = zplane.get_zeros();
+                let {magnitude, phase} = ztrans.filter(poles, zeros); //y-axis
+                let freqs = ztrans.frequencies //x-axis
+                // // update plot 
+                plt.plot(freqs,magnitude,freqs,phase,"frequancy response","phase response");
+        }
     </script>
 </body>
 
