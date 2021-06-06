@@ -93,46 +93,48 @@
     </table>
     <!-- freq response -->
     <script type="text/javascript">
-        let zplane = new Zplane(400, 400);
+        let zplane = new Zplane(350, 350);
         let ztrans = new ZTransform(10);
+        //Your beautiful D3 code will go here
+        zplane.plot_axis();
+        let plt = new Plot(50, 100);
+        // update plot 
+        plt.plot([], [], [], [], "magnitude response", "phase response");
+        const update_plots = () => {
+            plt.destroy();
+            let poles = zplane.get_poles();
+            let zeros = zplane.get_zeros();
+            let { magnitude, phase } = ztrans.filter(poles, zeros); //y-axis
+            let freqs = ztrans.frequencies //x-axis
+            // // update plot 
+            plt.plot(freqs, magnitude, freqs, phase, "frequancy response", "phase response");
+        }
+        zplane.function_during_drag = update_plots;
         const add_real = (type) => {
-            if(type == zplane.types.nonConjPole) {
+            if (type == zplane.types.nonConjPole) {
                 //get value of pole
                 let real = parseFloat(document.getElementById("realPole").value);
                 let imaginary = parseFloat(document.getElementById("imagPole").value);
-                console.log(real,imaginary);
-                zplane.add_point([real,imaginary],zplane.types.nonConjPole);
-            }else {
+                console.log(real, imaginary);
+                zplane.add_point([real, imaginary], zplane.types.nonConjPole);
+            } else {
                 let real = parseFloat(document.getElementById("realZero").value);
                 let imaginary = parseFloat(document.getElementById("imagZero").value);
-                zplane.add_point([real,imaginary],zplane.types.nonConjZero);
+                zplane.add_point([real, imaginary], zplane.types.nonConjZero);
             }
+            update_plots();
         }
         const add_conj = (type) => {
-            if(type == zplane.types.conjPole) {
+            if (type == zplane.types.conjPole) {
                 let real = parseFloat(document.getElementById("poleReal").value);
                 let imag = parseFloat(document.getElementById("poleImag").value);
-                zplane.add_point([real,imag],zplane.types.conjPole);
-            }else {
+                zplane.add_point([real, imag], zplane.types.conjPole);
+            } else {
                 let real = parseFloat(document.getElementById("zeroReal").value);
                 let imag = parseFloat(document.getElementById("zeroImag").value);
-                zplane.add_point([real,imag],zplane.types.conjZero);
+                zplane.add_point([real, imag], zplane.types.conjZero);
             }
-        }
-        //Your beautiful D3 code will go here
-        zplane.plot_axis();
-        let plt = new Plot(50,100);
-        // update plot 
-        plt.plot([],[],[],[],"magnitude response","phase response");
-        zplane.function_during_drag = () => {
-                //destroy old plot 
-                plt.destroy();
-                let poles = zplane.get_poles();
-                let zeros = zplane.get_zeros();
-                let {magnitude, phase} = ztrans.filter(poles, zeros); //y-axis
-                let freqs = ztrans.frequencies //x-axis
-                // // update plot 
-                plt.plot(freqs,magnitude,freqs,phase,"frequancy response","phase response");
+            update_plots();
         }
     </script>
 </body>
