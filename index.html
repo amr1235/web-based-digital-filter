@@ -6,13 +6,16 @@
     <title>D3 Test</title>
     <script type="text/javascript" src="d3/d3.js"></script>
     <script type="text/javascript" src="js/Zplane.js"></script>
+    <script type="text/javascript" src="js/chart/chart.js"></script>
+    <script type="text/javascript" src="js/plot.js"></script>
+    <script type="text/javascript" src="js/Ztransform.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
     <table>
         <tr>
-            <td> add real Pole </td>
+            <td> add Pole </td>
         </tr>
         <tr>
             <td>
@@ -20,7 +23,11 @@
                 <input type="text" name="realPole" id="realPole" value="0">
             </td>
             <td>
-                <button onclick="add_real('realPole')">add</button>
+                <label for="imagPole">imaginary : </label>
+                <input type="text" name="imagPole" id="imagPole" value="0">
+            </td>
+            <td>
+                <button onclick="add_real('nonConjPole')">add</button>
             </td>
         </tr>
         <tr>
@@ -28,19 +35,19 @@
         </tr>
         <tr>
             <td>
-                <label for="poleMag">magnitude : </label>
-                <input type="text" name="poleMag" id="poleMag" value="0">
+                <label for="poleReal">real : </label>
+                <input type="text" name="poleReal" id="poleReal" value="0">
             </td>
             <td>
-                <label for="polePhase">phase : </label>
-                <input type="text" name="polePhase" id="polePhase" value="0">
+                <label for="poleImag">imaginary : </label>
+                <input type="text" name="poleImag" id="poleImag" value="0">
             </td>
             <td>
-                <button>add</button>
+                <button onclick="add_conj('conjPole')">add</button>
             </td>
         </tr>
         <tr>
-            <td> add real Zero </td>
+            <td> add Zero </td>
         </tr>
         <tr>
             <td>
@@ -48,7 +55,11 @@
                 <input type="text" name="realZero" id="realZero" value="0">
             </td>
             <td>
-                <button onclick="add_real('realZero')">add</button>
+                <label for="imagZero">imaginary : </label>
+                <input type="text" name="imagZero" id="imagZero" value="0">
+            </td>
+            <td>
+                <button onclick="add_real('nonConjZero')">add</button>
             </td>
         </tr>
         <tr>
@@ -56,15 +67,15 @@
         </tr>
         <tr>
             <td>
-                <label for="zeroMag">magnitude : </label>
-                <input type="text" name="zeroMag" id="zeroMag" value="0">
+                <label for="zeroReal">real : </label>
+                <input type="text" name="zeroReal" id="zeroReal" value="0">
             </td>
             <td>
-                <label for="zeroPhase">phase : </label>
-                <input type="text" name="zeroPhase" id="zeroPhase" value="0">
+                <label for="zeroImag">imaginary : </label>
+                <input type="text" name="zeroImag" id="zeroImag" value="0">
             </td>
             <td>
-                <button>add</button>
+                <button onclick="add_conj('conjZero')">add</button>
             </td>
         </tr>
         <tr>
@@ -80,20 +91,53 @@
             </td>
         </tr>
     </table>
+    <!-- freq response -->
     <script type="text/javascript">
-        //Your beautiful D3 code will go here
         let zplane = new Zplane(400, 400);
-        zplane.plot_axis();
+        this.ztrans = new ZTransform(10);
+        this.plt = new Plot(50,100);
         const add_real = (type) => {
-            if(type == zplane.types.realPole) {
+            if(type == zplane.types.nonConjPole) {
                 //get value of pole
-                let value = parseFloat(document.getElementById("realPole").value);
-                zplane.add_point([value,0],zplane.types.realPole);
+                let real = parseFloat(document.getElementById("realPole").value);
+                let imaginary = parseFloat(document.getElementById("imagPole").value);
+                console.log(real,imaginary);
+                zplane.add_point([real,imaginary],zplane.types.nonConjPole);
             }else {
-                let value = parseFloat(document.getElementById("realZero").value);
-                zplane.add_point([value,0],zplane.types.realZero);
+                let real = parseFloat(document.getElementById("realZero").value);
+                let imaginary = parseFloat(document.getElementById("imagZero").value);
+                zplane.add_point([real,imaginary],zplane.types.nonConjZero);
             }
         }
+        const add_conj = (type) => {
+            if(type == zplane.types.conjPole) {
+                let real = parseFloat(document.getElementById("poleReal").value);
+                let imag = parseFloat(document.getElementById("poleImag").value);
+                zplane.add_point([real,imag],zplane.types.conjPole);
+            }else {
+                let real = parseFloat(document.getElementById("zeroReal").value);
+                let imag = parseFloat(document.getElementById("zeroImag").value);
+                zplane.add_point([real,imag],zplane.types.conjZero);
+            }
+        }
+        //Your beautiful D3 code will go here
+        zplane.plot_axis();
+        let poles = zplane.get_poles()
+        let zeros = zplane.get_zeros()
+        let response = this.ztrans.frequencyResponse(poles, zeros); //y-axis
+        let freqs = this.ztrans.frequencies //x-axis
+        // update plot 
+        this.plt.plot(freqs,response,"frequancy response");
+        zplane.function_during_drag = () => {
+        //destroy old plot 
+        this.plt.destroy();
+        let poles = zplane.get_poles()
+        let zeros = zplane.get_zeros()
+        let response = ztrans.frequencyResponse(poles, zeros); //y-axis
+        let freqs = ztrans.frequencies //x-axis
+        // update plot 
+        plt.plot(freqs,response,"frequancy response");
+    }
     </script>
 </body>
 
