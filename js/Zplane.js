@@ -58,6 +58,45 @@ class Zplane {
         let points =  this.dataSet.filter((point) => (point.type === this.types.nonConjPole) ||  (point.type === this.types.conjPole));
         return points.map((point) => point["point"]);
     }
+    //delete all zeros 
+    delete_zeros = () => {
+        //delete all zeros from dataSet
+        for (let i = 0; i < this.dataSet.length; i++) {
+            if((this.dataSet[i].type === this.types.nonConjZero) ||  (this.dataSet[i].type === this.types.conjZero)) {
+                this.dataSet.splice(i,1);
+                i--;
+            }
+        }
+        // get all points with type nonConjZero and conjZero in dom and delete it 
+        document.querySelectorAll(".point").forEach(node => {
+            if ((node.getAttribute("type") === this.types.nonConjZero) ||  
+                (node.getAttribute("type")  === this.types.conjZero)) 
+                {
+                    node.remove();
+                }
+        });
+    }
+    delete_poles = () => {
+        //delete all poles from dataSet
+        for (let i = 0; i < this.dataSet.length; i++) {
+            if((this.dataSet[i].type === this.types.nonConjPole) ||  (this.dataSet[i].type === this.types.conjPole)) {
+                this.dataSet.splice(i,1);
+                i--
+            }
+        }
+        // get all points with type nonConjZero and conjZero in dom and delete it 
+        document.querySelectorAll(".point").forEach(node => {
+            if ((node.getAttribute("type") === this.types.nonConjPole) ||  
+                (node.getAttribute("type")  === this.types.conjPole)) 
+                {
+                    node.remove();
+                }
+        });
+    }
+    delete_all = () => {
+        this.dataSet = [];
+        d3.selectAll(".point").data(this.dataSet).exit().remove();
+    }
     //check if a point is inside the z-plane
     isInside = (xElement, yElement) => {
         let firstPart = (xElement - this.middlePointOf_x) * (xElement - this.middlePointOf_x);
@@ -133,9 +172,7 @@ class Zplane {
                     .on("drag", (ev) => {
                         // get value in dataSet
                         let point = ev.subject.point;
-                        //change value in current label
-                        d3.select("#current_x").text(point[0]);
-                        d3.select("#current_j").text(point[1]);
+                        //change value in current label                        
                         let pIndex = -1;
                         // get point index
                         for (let i = 0; i < this.dataSet.length; i++) {
@@ -158,10 +195,16 @@ class Zplane {
                         if(this.function_during_drag !== undefined) {
                             this.function_during_drag();
                         }
+                        console.log(ev)
+                        d3.select("#current_x").text(mPoint[0].toFixed(3));
+                        d3.select("#current_j").text(mPoint[1].toFixed(3));
                     })
                 )
                 .attr("id", this.dataSet.length - 1)
                 .attr("style", "cursor: default;")
+                .attr("xPlan",point[0])
+                .attr("yPlan",point[1])
+                .attr("type",type)
                 .merge(points);
         } else if (type == this.types.nonConjZero) {
             points.enter().append("circle").attr("cx", (d) => {
@@ -206,9 +249,7 @@ class Zplane {
                     .on("drag", (ev) => {
                         // get value in dataSet
                         let point = ev.subject.point;
-                        //change value in current label
-                        d3.select("#current_x").text(point[0]);
-                        d3.select("#current_j").text(point[1]);
+
                         let pIndex = -1;
                         // get point index
                         for (let i = 0; i < this.dataSet.length; i++) {
@@ -231,9 +272,14 @@ class Zplane {
                         if(this.function_during_drag !== undefined) {
                             this.function_during_drag();
                         }
+                        d3.select("#current_x").text(mPoint[0].toFixed(3));
+                        d3.select("#current_j").text(mPoint[1].toFixed(3));
                     })
                 )
                 .attr("index", this.dataSet.length - 1)
+                .attr("xPlan",point[0])
+                .attr("yPlan",point[1])
+                .attr("type",type)
                 .merge(points);
         } else if (type == this.types.conjPole) {
             // we need to add two points 
@@ -272,16 +318,31 @@ class Zplane {
                 })
                 .on("click", (ev) => {
                     //delete point
+                    //delete point
                     //get point 
-                    // let xElement = d3.select(ev.target).attr("x") + 4;
-                    // let yElement = d3.select(ev.target).attr("y") - 6;
-                    // let point = this.mapFromElementToPlaneCor(xElement,yElement);
-                    // let pIndex = this.getIndexFromPoint(point);
-                    // let conIndex = this.getIndexFromPoint([point[0],-1*point[1]]);
-                    // console.log(point);
-                    // update 
-                    // let p = this.svg.selectAll(".point").data(this.dataSet);
-                    // p.exit().remove();
+                    let point = [ parseFloat(d3.select(ev.target).attr("xPlan")),
+                                  parseFloat(d3.select(ev.target).attr("yPlan"))
+                                ];
+                    // console.log(this.dataSet);
+                    let pIndex = this.getIndexFromPoint(point);
+                    let conIndex = this.getIndexFromPoint([point[0],-1*point[1]]);
+                    // console.log(pIndex,conIndex);
+                    this.dataSet.splice(pIndex,1);
+                    this.dataSet.splice(conIndex,1);
+                    document.querySelectorAll(".point").forEach(node => {
+                        //console.log(node.getAttribute("xPlan"),point[0]);
+                        if(parseFloat(node.getAttribute("xPlan")) === point[0] && 
+                            parseFloat(node.getAttribute("yPlan")) === point[1])
+                            {
+                                console.log("here");
+                                node.remove();
+                            }
+                        if(parseFloat(node.getAttribute("xPlan")) === point[0] && 
+                            parseFloat(node.getAttribute("yPlan")) === -1*point[1])
+                        {
+                            node.remove();
+                        }
+                    });
                 })
                 .call(d3.drag()
                     .on("start", (ev) => {
@@ -310,11 +371,6 @@ class Zplane {
                         }
                     })
                     .on("drag", (ev) => {
-                        let point = ev.subject.point;
-                        //change value in current label
-                        d3.select("#current_x").text(point[0]);
-                        d3.select("#current_j").text(point[1]);
-
                         //change value in dataset
                         let xElement = ev.x;
                         let yElement = ev.y;
@@ -329,9 +385,14 @@ class Zplane {
                         if(this.function_during_drag !== undefined) {
                             this.function_during_drag();
                         }
+                        d3.select("#current_x").text(mPoint[0].toFixed(3));
+                        d3.select("#current_j").text(mPoint[1].toFixed(3));
                     })
                 )
                 .attr("style", "cursor: default;")
+                .attr("xPlan",point[0])
+                .attr("yPlan",point[1])
+                .attr("type",type)
                 .merge(points);
         } else {
             // we need to add two points 
@@ -375,20 +436,25 @@ class Zplane {
                                   parseFloat(d3.select(ev.target).attr("yPlan"))
                                 ];
                     // console.log(this.dataSet);
-                    let pIndex = this.getIndexFromPoint(point); 
-                    this.dataSet.splice(pIndex,1);
-                    // let p = this.svg.selectAll(".point").data(this.dataSet,(d) => {
-                        
-                    // });
-                    points.exit().remove();
-                    //let conIndex = this.getIndexFromPoint([point[0],-1*point[1]]);
-                    // console.log(this.dataSet);
-                    // console.log(point,[point[0],-1*point[1]]);
+                    let pIndex = this.getIndexFromPoint(point);
+                    let conIndex = this.getIndexFromPoint([point[0],-1*point[1]]);
                     // console.log(pIndex,conIndex);
-                    // console.log(this.dataSet);
-                    // // update 
-                    // let p = this.svg.selectAll(".point").data(this.dataSet);
-                    // p.exit().remove();
+                    this.dataSet.splice(pIndex,1);
+                    this.dataSet.splice(conIndex,1);
+                    document.querySelectorAll(".point").forEach(node => {
+                        //console.log(node.getAttribute("xPlan"),point[0]);
+                        if(parseFloat(node.getAttribute("xPlan")) === point[0] && 
+                            parseFloat(node.getAttribute("yPlan")) === point[1])
+                            {
+                                console.log("here");
+                                node.remove();
+                            }
+                        if(parseFloat(node.getAttribute("xPlan")) === point[0] && 
+                            parseFloat(node.getAttribute("yPlan")) === -1*point[1])
+                        {
+                            node.remove();
+                        } 
+                    });
                 })
                 .call(d3.drag()
                 .on("start", (ev) => {
@@ -417,11 +483,6 @@ class Zplane {
                     }
                 })
                 .on("drag", (ev) => {
-                    let point = ev.subject.point;
-                    //change value in current label
-                    d3.select("#current_x").text(point[0]);
-                    d3.select("#current_j").text(point[1]);
-
                     //change value in dataset
                     let xElement = ev.x;
                     let yElement = ev.y;
@@ -441,10 +502,13 @@ class Zplane {
                     if(this.function_during_drag !== undefined) {
                         this.function_during_drag();
                     }
+                    d3.select("#current_x").text(mPoint[0].toFixed(3));
+                    d3.select("#current_j").text(mPoint[1].toFixed(3));
                 })
             )
             .attr("xPlan",point[0])
             .attr("yPlan",point[1])
+            .attr("type",type)
             .merge(points);
         }
     }
@@ -497,7 +561,9 @@ class Zplane {
                     v = this.yNegativScale(d["point"][1]) + 6;
                 }
                 return v;
-            });
+            })
+            .attr("xPlan",d => d["point"][0])
+            .attr("yPlan",d => d["point"][1]);
         } else if (type == this.types.nonConjZero) {
             this.svg.selectAll(".point").data(this.dataSet).attr("cx", (d) => {
                 let v = 0;
@@ -516,7 +582,9 @@ class Zplane {
                     v = this.yNegativScale(d["point"][1]);
                 }
                 return v;
-            });
+            })
+            .attr("xPlan",d => d["point"][0])
+            .attr("yPlan",d => d["point"][1]);
         }
         else if (type == this.types.conjPole) {
             this.svg.selectAll(".point").data(this.dataSet).attr("x", (d) => {
@@ -535,7 +603,9 @@ class Zplane {
                     v = this.yNegativScale(d["point"][1]) + 6;
                 }
                 return v;
-            });
+            })
+            .attr("xPlan",d => d["point"][0])
+            .attr("yPlan",d => d["point"][1]);
         }else {
             this.svg.selectAll(".point").data(this.dataSet).attr("cx", (d) => {
                 let v = 0;

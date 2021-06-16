@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>D3 Test</title>
+    <script type="text/javascript" src="d3/d3.js"></script>
+    <script type="text/javascript" src="js/Zplane.js"></script>
+    <script type="text/javascript" src="js/chart/chart.js"></script>
+    <script type="text/javascript" src="js/plot.js"></script>
+    <script type="text/javascript" src="js/Ztransform.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <table>
+        <tr>
+            <td> add Pole </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="realPole">real : </label>
+                <input type="text" name="realPole" id="realPole" value="0">
+            </td>
+            <td>
+                <label for="imagPole">imaginary : </label>
+                <input type="text" name="imagPole" id="imagPole" value="0">
+            </td>
+            <td>
+                <button onclick="add_real('nonConjPole')">add</button>
+            </td>
+        </tr>
+        <tr>
+            <td> add conjugate Pole </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="poleReal">real : </label>
+                <input type="text" name="poleReal" id="poleReal" value="0">
+            </td>
+            <td>
+                <label for="poleImag">imaginary : </label>
+                <input type="text" name="poleImag" id="poleImag" value="0">
+            </td>
+            <td>
+                <button onclick="add_conj('conjPole')">add</button>
+            </td>
+        </tr>
+        <tr>
+            <td> add Zero </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="realZero">real : </label>
+                <input type="text" name="realZero" id="realZero" value="0">
+            </td>
+            <td>
+                <label for="imagZero">imaginary : </label>
+                <input type="text" name="imagZero" id="imagZero" value="0">
+            </td>
+            <td>
+                <button onclick="add_real('nonConjZero')">add</button>
+            </td>
+        </tr>
+        <tr>
+            <td> add conjugate Zero </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="zeroReal">real : </label>
+                <input type="text" name="zeroReal" id="zeroReal" value="0">
+            </td>
+            <td>
+                <label for="zeroImag">imaginary : </label>
+                <input type="text" name="zeroImag" id="zeroImag" value="0">
+            </td>
+            <td>
+                <button onclick="add_conj('conjZero')">add</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>
+                    current real : <span id="current_x"></span>
+                </label>
+            </td>
+            <td>
+                <label>
+                    current j : <span id="current_j"></span>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>All Pass Filter</label>
+            </td>
+            <td>
+                <select id="allPass">
+                    <option></option>
+                    <option></option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <!-- freq response -->
+    <script type="text/javascript">
+        let zplane = new Zplane(350, 350);
+        let ztrans = new ZTransform(10);
+        let allPassValues = [];
+        //Your beautiful D3 code will go here
+        zplane.plot_axis();
+        let plt = new Plot(50, 100);
+        // update plot 
+        plt.plot([], [], [],[],[],[], "magnitude response", "phase response","All Pass ");
+        const update_plots = () => {
+            plt.destroy();
+            let poles = zplane.get_poles();
+            let zeros = zplane.get_zeros();
+            console.log(poles);
+            console.log(zeros);
+            let { magnitude, phase } = ztrans.filter(poles, zeros); //y-axis
+            let freqs = ztrans.frequencies //x-axis
+            // // update plot
+            plt.plot(freqs, magnitude, freqs, phase, "frequancy response", "phase response");
+        }
+        zplane.function_during_drag = update_plots;
+        const add_real = (type) => {
+            if (type == zplane.types.nonConjPole) {
+                //get value of pole
+                let real = parseFloat(document.getElementById("realPole").value);
+                let imaginary = parseFloat(document.getElementById("imagPole").value);
+                console.log(real, imaginary);
+                zplane.add_point([real, imaginary], zplane.types.nonConjPole);
+            } else {
+                let real = parseFloat(document.getElementById("realZero").value);
+                let imaginary = parseFloat(document.getElementById("imagZero").value);
+                zplane.add_point([real, imaginary], zplane.types.nonConjZero);
+            }
+            update_plots();
+        }
+        const add_conj = (type) => {
+            if (type == zplane.types.conjPole) {
+                let real = parseFloat(document.getElementById("poleReal").value);
+                let imag = parseFloat(document.getElementById("poleImag").value);
+                zplane.add_point([real, imag], zplane.types.conjPole);
+            } else {
+                let real = parseFloat(document.getElementById("zeroReal").value);
+                let imag = parseFloat(document.getElementById("zeroImag").value);
+                zplane.add_point([real, imag], zplane.types.conjZero);
+            }
+            update_plots();
+        }
+    </script>
+</body>
+
+</html>

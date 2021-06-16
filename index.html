@@ -10,98 +10,161 @@
     <script type="text/javascript" src="js/plot.js"></script>
     <script type="text/javascript" src="js/Ztransform.js"></script>
     <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <style>
+        * {
+            margin: 0%;
+            padding: 0%;
+            box-sizing: border-box;
+        }
+
+        div {
+            margin: 0.25% 0% 0.25% 0%;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <table>
-        <tr>
-            <td> add Pole </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="realPole">real : </label>
-                <input type="text" name="realPole" id="realPole" value="0">
-            </td>
-            <td>
-                <label for="imagPole">imaginary : </label>
-                <input type="text" name="imagPole" id="imagPole" value="0">
-            </td>
-            <td>
-                <button onclick="add_real('nonConjPole')">add</button>
-            </td>
-        </tr>
-        <tr>
-            <td> add conjugate Pole </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="poleReal">real : </label>
-                <input type="text" name="poleReal" id="poleReal" value="0">
-            </td>
-            <td>
-                <label for="poleImag">imaginary : </label>
-                <input type="text" name="poleImag" id="poleImag" value="0">
-            </td>
-            <td>
-                <button onclick="add_conj('conjPole')">add</button>
-            </td>
-        </tr>
-        <tr>
-            <td> add Zero </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="realZero">real : </label>
-                <input type="text" name="realZero" id="realZero" value="0">
-            </td>
-            <td>
-                <label for="imagZero">imaginary : </label>
-                <input type="text" name="imagZero" id="imagZero" value="0">
-            </td>
-            <td>
-                <button onclick="add_real('nonConjZero')">add</button>
-            </td>
-        </tr>
-        <tr>
-            <td> add conjugate Zero </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="zeroReal">real : </label>
-                <input type="text" name="zeroReal" id="zeroReal" value="0">
-            </td>
-            <td>
-                <label for="zeroImag">imaginary : </label>
-                <input type="text" name="zeroImag" id="zeroImag" value="0">
-            </td>
-            <td>
-                <button onclick="add_conj('conjZero')">add</button>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label>
-                    current real : <span id="current_x"></span>
-                </label>
-            </td>
-            <td>
-                <label>
-                    current j : <span id="current_j"></span>
-                </label>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label>All Pass Filter</label>
-            </td>
-            <td>
-                <select id="allPass">
+    <section class="d-lg-flex container" id="plots">
+        <div id="circle" class="col  m-sm-5">
+            <div class="row mb-4">
+                <div class="col">
+                    <button class="btn h-100 btn-danger" onclick="delete_zeros()">Clear Zeroes</button>
+                </div>
+                <div class="col">
+                    <button class="btn h-100 btn-danger" onclick="delete_poles()">Clear poles</button>
+                </div>
+                <div class="col">
+                    <button class="btn h-100 btn-danger" onclick="delete_all()">Clear All</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h6>Current real : <span id="current_x"></span></h6>
+                </div>
+                <div class="col">
+                    <h6>Current j : <span id="current_j"></span></h6>
+                </div>
+            </div>
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault"> All-Pass </label>
+
+        </div>
+
+
+        <section class="container mt-5">
+            <div id="plot1" class="col">
+
+            </div>
+            <div id="plot2" class="col">
+
+            </div>
+            <div id="plot3" class="col">
+
+            </div>
+        </section>
+    </section>
+
+    <section id="plot_info" class="container mt-5 mb-5">
+        <div class="row col-12">
+            <h3>Add Pole</h3>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h6 for="realPole">Real : </h6>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" name="realPole" id="realPole" value="0">
+            </div>
+            <div class="col">
+                <h6 for="imagPole">Imaginary : </h6>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" name="imagPole" id="imagPole" value="0">
+            </div>
+            <div class="col">
+                <button class="btn btn-primary" onclick="add_real('nonConjPole')">add</button>
+            </div>
+        </div>
+        <div class="row col-12">
+            <h3>Add conjugate Pole</h3>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h6 for="realPole">Real : </h6>
+            </div>
+            <div class="col">
+                <input type="text" name="poleReal" class="form-control" id="poleReal" value="0">
+            </div>
+            <div class="col">
+                <h6 for="imagPole">Imaginary : </h6>
+            </div>
+            <div class="col">
+                <input type="text" name="poleImag" class="form-control" id="poleImag" value="0">
+            </div>
+            <div class="col">
+                <button class="btn btn-primary" onclick="add_conj('conjPole')">add</button>
+            </div>
+        </div>
+        <div class="row col-12">
+            <h3>Add Zero</h3>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h6 for="realPole">Real : </h6>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" name="realZero" id="realZero" value="0">
+            </div>
+            <div class="col">
+                <h6 for="imagPole">Imaginary : </h6>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" name="imagZero" id="imagZero" value="0">
+            </div>
+            <div class="col">
+                <button onclick="add_real('nonConjZero')" class="btn btn-primary">add</button>
+            </div>
+        </div>
+        <div class="row col-12">
+            <h3>Add conjugate Zero</h3>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h6 for="realPole">Real : </h6>
+            </div>
+            <div class="col">
+                <input type="text" name="zeroReal" id="zeroReal" class="form-control" value="0">
+            </div>
+            <div class="col">
+                <h6 for="imagPole">Imaginary : </h6>
+            </div>
+            <div class="col">
+                <input type="text" name="zeroImag" id="zeroImag" class="form-control" value="0">
+            </div>
+            <div class="col">
+                <button onclick="add_conj('conjZero')" class="btn btn-primary">add</button>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-2">
+                <h3>All Pass Filter</h3>
+            </div>
+            <div class="col-2">
+                <select id="allPass" class="form-select w-25" aria-label="Default select example">
                     <option></option>
                     <option></option>
                 </select>
-            </td>
-        </tr>
-    </table>
+            </div>
+        </div>
+    </section>
+
+
     <!-- freq response -->
     <script type="text/javascript">
         let zplane = new Zplane(350, 350);
@@ -111,7 +174,7 @@
         zplane.plot_axis();
         let plt = new Plot(50, 100);
         // update plot 
-        plt.plot([], [], [], [],[],[], "magnitude response", "phase response","All Pass ");
+        plt.plot([], [], [], [], [], [], "magnitude response", "phase response", "All Pass ");
         const update_plots = () => {
             plt.destroy();
             let poles = zplane.get_poles();
@@ -149,6 +212,15 @@
                 zplane.add_point([real, imag], zplane.types.conjZero);
             }
             update_plots();
+        }
+        const delete_poles = () => {
+            zplane.delete_poles();
+        }
+        const delete_zeros = () => {
+            zplane.delete_zeros();
+        }
+        const delete_all = () => {
+            zplane.delete_all();
         }
     </script>
 </body>
