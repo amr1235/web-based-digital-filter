@@ -10,11 +10,12 @@ class Zplane {
         this.middlePointOf_x = width / 2;
         this.middlePointOf_y = height / 2;
         // add svg element 
-        this.svg = d3.select("body")
+        this.svg = d3.select("#circle")
             .append("svg")
             .attr("width", width)
             .attr("height", height)
             .attr("id", "zPlane");
+            // .attr("style","vertical-align:top");
 
         // set our scale
         // scale x

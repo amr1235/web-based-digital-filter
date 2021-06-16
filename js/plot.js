@@ -4,21 +4,21 @@ class Plot {
         this.height = h;
     }
     plot = (x1, y1, x2, y2,x3,y3, label1, label2,label3) => {
-        this.freq = d3.select("body").append("div")
+        this.freq = d3.select("#plot1").append("div")
             .attr("id", "freqResp")
             .attr("style", "position: relative;margin: auto;")
             .attr("width", this.width).attr("height", this.height);
         this.canvas = d3.select("#freqResp").append("canvas")
             .attr("id", "myChart1");
 
-        this.phase = d3.select("body").append("div")
+        this.phase = d3.select("#plot2").append("div")
         .attr("id", "phaseResp")
         .attr("style", "position: relative;margin: auto;")
         .attr("width", this.width).attr("height", this.height);
         this.canvas = d3.select("#phaseResp").append("canvas")
         .attr("id", "myChart2");
 
-        this.phase = d3.select("body").append("div")
+        this.phase = d3.select("#plot3").append("div")
         .attr("id", "allPassResp")
         .attr("style", "position: relative;margin: auto;")
         .attr("width", this.width).attr("height", this.height);
