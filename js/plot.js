@@ -3,7 +3,7 @@ class Plot {
         this.width = w;
         this.height = h;
     }
-    plot = (x1, y1, x2, y2, label1, label2) => {
+    plot = (x1, y1, x2, y2,x3,y3, label1, label2,label3) => {
         this.freq = d3.select("body").append("div")
             .attr("id", "freqResp")
             .attr("style", "position: relative;margin: auto;")
@@ -18,8 +18,16 @@ class Plot {
         this.canvas = d3.select("#phaseResp").append("canvas")
         .attr("id", "myChart2");
 
+        this.phase = d3.select("body").append("div")
+        .attr("id", "allPassResp")
+        .attr("style", "position: relative;margin: auto;")
+        .attr("width", this.width).attr("height", this.height);
+        this.canvas = d3.select("#allPassResp").append("canvas")
+        .attr("id", "myChart3"); 
+
         this.ctx1 = document.getElementById('myChart1');
         this.ctx2 = document.getElementById('myChart2');
+        this.ctx3 = document.getElementById('myChart3');
 
         let data1 = {
             labels: x1,
@@ -40,6 +48,17 @@ class Plot {
                 borderColor: 'rgb(75, 192, 192)'
             }]
         }
+
+        let data3 = {
+            labels: x3,
+            datasets: [{
+                label: label3,
+                data: y3,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)'
+            }]
+        }
+
         let options = {
             maintainAspectRatio: false,
             animation: false
@@ -49,14 +68,22 @@ class Plot {
             options: options,
             data: data1
         });
+
         var myChart2 = new Chart(this.ctx2, {
             type: 'line',
             options: options,
             data: data2
         });
+
+        var myChart3 = new Chart(this.ctx3, {
+            type: 'line',
+            options: options,
+            data: data3
+        });
     }
     destroy = () => {
         d3.select("#myChart1").remove();
         d3.select("#myChart2").remove();
+        d3.select("#myChart3").remove();
     }
 }

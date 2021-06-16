@@ -90,23 +90,37 @@
                 </label>
             </td>
         </tr>
+        <tr>
+            <td>
+                <label>All Pass Filter</label>
+            </td>
+            <td>
+                <select id="allPass">
+                    <option></option>
+                    <option></option>
+                </select>
+            </td>
+        </tr>
     </table>
     <!-- freq response -->
     <script type="text/javascript">
         let zplane = new Zplane(350, 350);
         let ztrans = new ZTransform(10);
+        let allPassValues = [];
         //Your beautiful D3 code will go here
         zplane.plot_axis();
         let plt = new Plot(50, 100);
         // update plot 
-        plt.plot([], [], [], [], "magnitude response", "phase response");
+        plt.plot([], [], [], [],[],[], "magnitude response", "phase response","All Pass ");
         const update_plots = () => {
             plt.destroy();
             let poles = zplane.get_poles();
             let zeros = zplane.get_zeros();
+            console.log(poles);
+            console.log(zeros);
             let { magnitude, phase } = ztrans.filter(poles, zeros); //y-axis
             let freqs = ztrans.frequencies //x-axis
-            // // update plot 
+            // // update plot
             plt.plot(freqs, magnitude, freqs, phase, "frequancy response", "phase response");
         }
         zplane.function_during_drag = update_plots;
