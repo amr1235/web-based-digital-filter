@@ -9,6 +9,9 @@
     <script type="text/javascript" src="js/chart/chart.js"></script>
     <script type="text/javascript" src="js/plot.js"></script>
     <script type="text/javascript" src="js/Ztransform.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.2/math.min.js"
+        integrity="sha512-X8Y5jFgsf/zxQN1X83Tdp1eHCzY52EfcYrDpbLxffRpF3Cyub7v9Jo0b5uwt1x6/h3ZnFzjL+yK12y1f7Q2zhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
@@ -31,6 +34,7 @@
 <body>
     <section class="d-lg-flex container" id="plots">
         <div id="circle" class="col  m-sm-5">
+
             <div class="row mb-4">
                 <div class="col">
                     <button class="btn h-100 btn-danger" onclick="delete_zeros()">Clear Zeroes</button>
@@ -50,8 +54,8 @@
                     <h6>Current j : <span id="current_j"></span></h6>
                 </div>
             </div>
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-            <label class="form-check-label" for="flexCheckDefault"> All-Pass </label>
+            <input class="form-check-input" onchange="all_pass_check(this)" type="checkbox" value="" id="allPassCheck">
+            <label class="form-check-label" for="allPassCheck"> All-Pass </label>
 
         </div>
 
@@ -152,14 +156,38 @@
         </div>
 
         <div class="row mt-4">
-            <div class="col-2">
+            <div class="col-3">
                 <h3>All Pass Filter</h3>
             </div>
             <div class="col-2">
-                <select id="allPass" class="form-select w-25" aria-label="Default select example">
-                    <option></option>
-                    <option></option>
+                <select name="allPass" id="allPass" class="form-select w-51">
+                    <option value="0.5+0.5i" selected>0.5+0.5i</option>
+                    <option value="0.2+0.5i"> 0.2+0.5i</option>
+                    <option value="-0.2+0.5i"> -0.2+0.5i</option>
                 </select>
+            </div>
+            <div class="col-2">
+                <button class="btn btn-primary" onclick="add_allPass()">Add</button>
+            </div>
+        </div>
+        <div class="row col-12">
+            <h3>Add your own Filter</h3>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h6 for="realPole">Real : </h6>
+            </div>
+            <div class="col">
+                <input type="text" name="zeroReal" id="allPassReal" class="form-control" value="0">
+            </div>
+            <div class="col">
+                <h6 for="imagPole">Imaginary : </h6>
+            </div>
+            <div class="col">
+                <input type="text" name="zeroImag" id="allPassImag" class="form-control" value="0">
+            </div>
+            <div class="col">
+                <button onclick="add_custom_all_pass()" class="btn btn-primary">add</button>
             </div>
         </div>
     </section>
@@ -168,37 +196,74 @@
     <!-- freq response -->
     <script type="text/javascript">
         let zplane = new Zplane(350, 350);
-        let ztrans = new ZTransform(10);
+        let ztrans = new ZTransform();
         let allPassValues = [];
         //Your beautiful D3 code will go here
         zplane.plot_axis();
         let plt = new Plot(50, 100);
         // update plot 
-        plt.plot([], [], [], [], [], [], "magnitude response", "phase response", "All Pass ");
+        let charts = plt.plot([], [], [], [], [], [], "magnitude response", "phase response", "All Pass Phase Response");
         const update_plots = () => {
             plt.destroy();
             let poles = zplane.get_poles();
             let zeros = zplane.get_zeros();
-            console.log(poles);
-            console.log(zeros);
-            let { magnitude, phase } = ztrans.filter(poles, zeros); //y-axis
-            let freqs = ztrans.frequencies //x-axis
-            // // update plot
-            plt.plot(freqs, magnitude, freqs, phase, "frequancy response", "phase response");
+            let allPass = zplane.get_allPass();
+            let { magnitude, phase } = ztrans.filter(poles, zeros, allPass); //y-axis
+            let freqs = ztrans.frequencies; //x-axis
+            charts = plt.plot(freqs, magnitude, freqs, phase, [], [], "frequancy response", "phase response", "All-pass Phase Response");
+            update_allPass();
         }
+        const update_allPass = () => {
+            // update all pass
+            let allPass = zplane.get_allPass();
+            let { magnitude, phase } = ztrans.filter([], [], allPass);
+            let freqs = ztrans.frequencies //x-axis
+            charts.myChart3.data.labels = freqs;
+            charts.myChart3.data.datasets.forEach((dataset) => {
+                dataset.data = phase;
+            });
+            charts.myChart3.update();
+        }
+        // const all_pass_check = (ev) => {
+        //     if(ev.checked) {
+
+        //     }
+        // }
         zplane.function_during_drag = update_plots;
+        zplane.function_during_delete = update_plots;
         const add_real = (type) => {
             if (type == zplane.types.nonConjPole) {
                 //get value of pole
                 let real = parseFloat(document.getElementById("realPole").value);
                 let imaginary = parseFloat(document.getElementById("imagPole").value);
-                console.log(real, imaginary);
                 zplane.add_point([real, imaginary], zplane.types.nonConjPole);
             } else {
                 let real = parseFloat(document.getElementById("realZero").value);
                 let imaginary = parseFloat(document.getElementById("imagZero").value);
                 zplane.add_point([real, imaginary], zplane.types.nonConjZero);
             }
+            update_plots();
+        }
+        const add_allPass = () => {
+            let value = document.getElementById("allPass").value;
+            value = math.complex(value);
+            zplane.add_point([value.re, value.im], zplane.types.allPass);
+            update_plots();
+        }
+        add_custom_all_pass = () => {
+            let re = parseFloat(document.getElementById("allPassReal").value);
+            let im = parseFloat(document.getElementById("allPassImag").value);
+            zplane.add_point([re, im], zplane.types.allPass);
+            //add to our lib
+            let c = math.complex(re, im);
+            var sel = document.getElementById('allPass');
+            // create new option element
+            var opt = document.createElement('option');
+            // create text node to add to option element (opt)
+            opt.appendChild(document.createTextNode(c.toString()));
+            // set value property of opt
+            opt.value = c.toString();
+            sel.appendChild(opt); 
             update_plots();
         }
         const add_conj = (type) => {
@@ -215,12 +280,15 @@
         }
         const delete_poles = () => {
             zplane.delete_poles();
+            update_plots();
         }
         const delete_zeros = () => {
             zplane.delete_zeros();
+            update_plots();
         }
         const delete_all = () => {
             zplane.delete_all();
+            update_plots();
         }
     </script>
 </body>

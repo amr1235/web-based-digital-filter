@@ -1,17 +1,18 @@
 class ZTransform {
-    constructor(samplingRate) {
-        this.semiUnitCircle = this.generateSemiUnitCircle(parseInt(samplingRate / 2));
+    constructor() {
+        this.MAX_POINTS = 500
+        this.semiUnitCircle = this.generateSemiUnitCircle();
     }
 
     get frequencies() {
         return this.theta;
     }
 
-    generateSemiUnitCircle(numberOfSamples) {
-        this.theta = this.linspace(0, Math.PI, numberOfSamples);
+    generateSemiUnitCircle() {
+        this.theta = this.linspace(0, Math.PI, this.MAX_POINTS);
         let points = [];
         let x, y;
-        for (let i = 0; i < numberOfSamples; i++) {
+        for (let i = 0; i < this.MAX_POINTS; i++) {
             x = Math.cos(this.theta[i]);
             y = Math.sin(this.theta[i]);
             points[i] = [x, y]
@@ -32,11 +33,11 @@ class ZTransform {
             return Math.PI / 2;
         }
         else {
-            return Math.atan(point[1] / point[0]);
+            return - Math.atan(point[1] / point[0]);
         }
     }
 
-    filter(poles = [[]], zeroes = [[]]) {
+    filter(poles = [[]], zeroes = [[]], allPass = [[]]) {
         let magResponse = []
         let phaseResponse = []
         let magNum, magDenum, phaseNum, phaseDenum, diff;
@@ -48,17 +49,20 @@ class ZTransform {
             for (const zero of zeroes) {
                 diff = this.difference(point, zero);
                 magNum = magNum * this.magnitude(diff);
-                phaseNum = phaseNum - this.phase(diff);
-                if (Math.abs(phaseNum.toFixed(5)) == Math.PI.toFixed(5)) phaseNum = 0;
+                phaseNum = phaseNum + this.phase(diff);
             }
             for (const pole of poles) {
                 diff = this.difference(point, pole);
                 magDenum = magDenum * this.magnitude(diff);
-                phaseDenum = phaseDenum - this.phase(diff);
-                if (Math.abs(phaseDenum.toFixed(5)) == Math.PI.toFixed(5)) phaseDenum = 0;
+                phaseDenum = phaseDenum + this.phase(diff);
             }
-            magResponse.push(magNum / magDenum);
-            phaseResponse.push(phaseNum - phaseDenum);
+            for (const a of allPass) {
+                diff = this.difference(point, a);
+                phaseNum = phaseNum + this.phase([1-point[0]*a[0] - point[1]*a[1],point[0]*a[1] - point[1]*a[0]]);
+                phaseDenum = phaseDenum + this.phase(diff);
+            }
+            magResponse.push((magNum / magDenum).toFixed(5));
+            phaseResponse.push(phaseNum - phaseDenum.toFixed(5));
         }
         return {
             "magnitude": magResponse,
@@ -70,26 +74,8 @@ class ZTransform {
         const step = (end - start) / (num - 1);
         let arr = [];
         for (let i = 0; i < num; i++) {
-            arr[i] = start + (i * step);
+            arr[i] = (start + (i * step)).toFixed(5);
         }
         return arr;
     }
 }
-
-
-// poles = [
-//     //   x, y
-//     // [0, 5],
-//     // [0, 1]
-// ];
-// zeroes = [
-//     [0.5, 0.866],
-//     [0.5, -0.866],
-// ];
-
-// const SAMPLING_RATE = 100;
-// let ztrans = new ZTransform(SAMPLING_RATE)
-// let { magnitude, phase } = ztrans.filter(poles, zeroes);
-// let freqs = ztrans.frequencies
-// plot(freqs,mag)
-// plot(freqs,phase)

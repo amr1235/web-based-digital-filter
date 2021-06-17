@@ -3,7 +3,7 @@ class Plot {
         this.width = w;
         this.height = h;
     }
-    plot = (x1, y1, x2, y2,x3,y3, label1, label2,label3) => {
+    plot = (x1, y1, x2, y2, x3, y3, label1, label2, label3) => {
         this.freq = d3.select("#plot1").append("div")
             .attr("id", "freqResp")
             .attr("style", "position: relative;margin: auto;")
@@ -12,18 +12,18 @@ class Plot {
             .attr("id", "myChart1");
 
         this.phase = d3.select("#plot2").append("div")
-        .attr("id", "phaseResp")
-        .attr("style", "position: relative;margin: auto;")
-        .attr("width", this.width).attr("height", this.height);
+            .attr("id", "phaseResp")
+            .attr("style", "position: relative;margin: auto;")
+            .attr("width", this.width).attr("height", this.height);
         this.canvas = d3.select("#phaseResp").append("canvas")
-        .attr("id", "myChart2");
+            .attr("id", "myChart2");
 
         this.phase = d3.select("#plot3").append("div")
-        .attr("id", "allPassResp")
-        .attr("style", "position: relative;margin: auto;")
-        .attr("width", this.width).attr("height", this.height);
+            .attr("id", "allPassResp")
+            .attr("style", "position: relative;margin: auto;")
+            .attr("width", this.width).attr("height", this.height);
         this.canvas = d3.select("#allPassResp").append("canvas")
-        .attr("id", "myChart3"); 
+            .attr("id", "myChart3");
 
         this.ctx1 = document.getElementById('myChart1');
         this.ctx2 = document.getElementById('myChart2');
@@ -61,7 +61,16 @@ class Plot {
 
         let options = {
             maintainAspectRatio: false,
-            animation: false
+            animation: false,
+            scales : {
+                x : {
+                    ticks : {
+                        sampleSize : 5
+                    }
+                }
+                
+            }
+
         }
         var myChart1 = new Chart(this.ctx1, {
             type: 'line',
@@ -80,6 +89,7 @@ class Plot {
             options: options,
             data: data3
         });
+        return {myChart1 , myChart2 , myChart3 };
     }
     destroy = () => {
         d3.select("#myChart1").remove();
