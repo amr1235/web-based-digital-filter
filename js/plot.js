@@ -69,8 +69,13 @@ class Plot {
                     }
                 }
                 
+            },
+            elements : {
+                point : {
+                    backgroundColor : "	#FF8C00",
+                    borderWidth : "0"
+                }
             }
-
         }
         var myChart1 = new Chart(this.ctx1, {
             type: 'line',

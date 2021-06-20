@@ -36,7 +36,7 @@ class Zplane {
         this.svg.append("circle").attr("cx", this.middlePointOf_x).attr("cy", this.middlePointOf_y).attr("r", this.middlePointOf_x - this.padding)
             .attr("stroke", "rgb(115, 115, 115)")
             .attr("stroke-width", "1.8")
-            .attr("fill", "none");
+            .attr("fill", "#ececec");
 
         this.types = {
             nonConjPole: "nonConjPole",
